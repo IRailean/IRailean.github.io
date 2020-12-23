@@ -5,6 +5,7 @@ layout: single
 author_profile: true
 read_time: true
 categories: [projects]
+classes: wide
 header :
     teaser: "/assets/images/markus-spiske-466ENaLuhLY-unsplash.jpg"
 comments : true
