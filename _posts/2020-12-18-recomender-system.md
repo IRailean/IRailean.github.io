@@ -19,7 +19,7 @@ sidebar:
 
 We will not dive into theory. But if you want to know more, please take a look at [this ](https://www.youtube.com/watch?v=giIXNoiqO_U)set of videos by Andrew Ng, which explains about recommender systems in a coherent and interesting way. Here we will focus more on practical implementation.
 
-Simply put, you have a set of ratings \\(R\\), that was given by a set of users \\(U\\) to a set of movies \\(M\\). You want to train a model that would be able to predict rating \\(R_{j+1}\\) that a user \\(U_{i}\\) would give to a movie \\(M_{j}\\).
+Simply put, you have a set of ratings \\(R\\), that was given by a set of users \\(U\\) to a set of movies \\(M\\). You want to train a model that would be able to predict rating \\(R_{ij}\\) that a user \\(U_{i}\\) would give to a movie \\(M_{j}\\).
 
 To build a recommender system, we need a dataset. We will use this [MovieTweetings ](https://www.kaggle.com/tunguz/movietweetings)dataset from Kaggle. It contains ~ 815000 ratings from ~60000 users.
 
