@@ -33,18 +33,18 @@ Also, you can use notebooks directly from google colab. Do not forget to change 
 
 Download data from [here](https://www.kaggle.com/tunguz/movietweetings) and save it on your Google Drive.
 Unzip files. (I have created kaggle folder on my Google Drive, you may specify your location)
-
+```python
     !unzip /content/drive/My\ Drive/kaggle/MovieTweeting/movietweetings.zip -d /content/drive/My\ Drive/kaggle/MovieTweeting/
-
+```
 Mount your drive to have access to its files
-
+```python
     from google.colab import drive
     drive.mount('/content/drive')
-
+```
 ## **Data preparation**
 
 Import modules that you may need
-
+```python
     # For modeling
     from fastai.tabular import *
     from fastai.collab import *
@@ -56,9 +56,9 @@ Import modules that you may need
     # For working with data
     import pandas as pd
     import numpy as np
-
+```
 Specify Path to your data and read it as .csv file. Note that we data is separated by ÔÇÿ::ÔÇÖ, so take this into consideration. Also, specify columns name, because they`re not been provided in the data.
-
+```python
     PATH = Path('/content/drive/My Drive/kaggle/MovieTweeting')
 
     movies = pd.read_csv(Path(PATH, 'movies.dat'), sep='::', names=['id', 'name', 'genre'])
@@ -66,23 +66,23 @@ Specify Path to your data and read it as .csv file. Note that we data is separat
     ratings = pd.read_csv(Path(PATH, 'ratings.dat'), sep='::', names=['user_id', 'movie_id', 'rating', 'rating_timestamp'])
 
     users = pd.read_csv(Path(PATH, 'users.dat'), sep='::', names=['user_id', 'twitter_id'])
-
+```
 We have movie id and movie names in different data frames, so we need to merge them. Column ÔÇÿidÔÇÖ in the movie's dataframe is the same as ÔÇÿmovie_idÔÇÖ in the ratings dataframe, so inner merge them. Drop NaN values also.
-
+```python
     joined = pd.merge(left=movies.sort_values(by='id'), right=ratings.sort_values(by='movie_id'), left_on='id', right_on='movie_id', how='inner')
 
     joined = joined.dropna(axis=0)
-
+```
 Save your preprocessed dataframe to pickle file
-
+```python
     joined.to_pickle(Path(PATH/'movies_preprocessed.pkl'))
-
+```
 ## Recommender System
 
 Load your data. 
 When training your model you will be able to get some very useful metrics and to decide whether it is working well enough or not. 
 But! Would not be better to test the model on yourself? Pick a user_id that is not presented in the datasets (I choose 99999) and then rate some movies on your choice, then add your user_data to your main dataframe.
-
+```python
     data = pd.read_pickle(path/'movies_preprocessed.pkl')
 
     rows = []
@@ -103,36 +103,36 @@ But! Would not be better to test the model on yourself? Pick a user_id that is n
     data_reduced = pd.concat([data_reduced, user_data], axis=0)
     data_reduced = data[['movie_id', 'user_id', 'rating']]
     data_reduced.head()
-
+```
 The resulting dataframe will look something like that:
 
 ![*Resulting DataFrame*](https://cdn-images-1.medium.com/max/2000/1*DKUR3YzEfJc742uyKGukZg.png)**Resulting DataFrame**
 
 Define collab_learner, where n_factors is our embedding vector size, y_range specifies the rating range.
-
+```python
     data_collab = CollabDataBunch.from_df(data_reduced, seed=42, valid_pct=0.2, user_name='user_id', item_name='movie_id', rating_name='rating')
 
     learn = collab_learner(data_collab, n_factors=40, y_range=(0, 10), wd=1e-2)
-
+```
 Now you want to learn your model. First of all, find a good learning rate.
-
+```python
     learn.lr_find()
     learn.recorder.plot()
-
+```
 ![](https://cdn-images-1.medium.com/max/2000/1*UF809erMjsliqS7HJhX-9A.png)
 
 You can play around with the learning rate. I have chosen 1e-3. Trained it for 10 epochs and got ~ 2.55 valid_loss.
-
+```python
     learn.fit_one_cycle(10, 1e-3)
-
+```
 Save your model.
 Don`t forget to move it to your drive!
-
+```python
     learn.save("trained_model", return_path=True)
     !mv /content/models/trained_model.pth /content/drive/My\ Drive/kaggle/MovieTweeting
-
+```
 Once you have your model trained, you may want to try how does it work. Create test set of unique movies for a specific user. This way we will be able to predict the rating for each movie that could be made by user_id 99999 (by you). Define collab_learner. Do not forget to specify test_data when creating CollabDataBunch.
-
+```python
     rows = []
 
     movies = list(data.drop_duplicates(subset='movie_id', keep='first').movie_id)
@@ -150,18 +150,18 @@ Once you have your model trained, you may want to try how does it work. Create t
     learn = collab_learner(data_collab, n_factors=40, y_range=(0, 10), wd=1e-2)
 
     learn_loaded = learn.load(Path('/content/drive/My Drive/kaggle/MovieTweeting/trained_model'))
-
+```
 Get predictions.
-
+```python
     preds, y = learn_loaded.get_preds(DatasetType.Test)
-
+```
 Show top-10 movies for user_id 99999
-
+```python
     for idx, (score, name) in enumerate(sorted(zip(preds, top_names), reverse=True)):
         if idx >= 10:
             break
         print("Score: ", round(float(score), 2), " for movie: ", name)
-
+```
 Here is the output for me:
 
 ![](https://cdn-images-1.medium.com/max/2000/1*fl1wznv7bz-U_vb8NbFwIw.png)
