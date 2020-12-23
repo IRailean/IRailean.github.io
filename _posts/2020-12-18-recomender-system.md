@@ -20,8 +20,8 @@ sidebar:
 
 
 \\(E = mc^2\\)
-\forall x \in X, \quad \exists y \leq \epsilon
-k_{n+1} = n^2 + k_n^2 - k_{n-1}
+\\(forall x \in X, \quad \exists y \leq \epsilon\\)
+\\(k_{n+1} = n^2 + k_n^2 - k_{n-1}\\)
 We will not dive into theory. But if you want to know more, please take a look at [this ](https://www.youtube.com/watch?v=giIXNoiqO_U)set of videos by Andrew Ng, which explains about recommender systems in a coherent and interesting way. Here we will focus more on practical implementation.
 
 Simply put, you have a set of ratings ***R***, that was given by a set of users ***U*** to a set of movies*** M. ***You want to train a model that would be able to predict rating ***R**ij** ***that a user*** U**i** ***would give to a movie ***M**j.*
