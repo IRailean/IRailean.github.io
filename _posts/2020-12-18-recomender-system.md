@@ -18,6 +18,8 @@ sidebar:
 # Recommender system using fastai in Google Colab
 
 
+\[p(\theta) = \mathbf{\prod}_{i,c}p(\mathbf{\theta}^i(c))\]
+$$ E = mc^2 $$
 
 We will not dive into theory. But if you want to know more, please take a look at [this ](https://www.youtube.com/watch?v=giIXNoiqO_U)set of videos by Andrew Ng, which explains about recommender systems in a coherent and interesting way. Here we will focus more on practical implementation.
 
